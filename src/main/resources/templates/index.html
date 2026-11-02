@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('dashboard')}"></header>
+<main>
+    <h1>Dashboard</h1>
+    <div th:replace="~{fragments/layout :: pesan}"></div>
+
+    <div class="statistik">
+        <div class="card"><div class="label">Total omzet</div>
+            <div class="nilai" th:text="${'Rp ' + #numbers.formatDecimal(omzet, 1, 'POINT', 0, 'COMMA')}">Rp 0</div></div>
+        <div class="card"><div class="label">Jumlah transaksi</div>
+            <div class="nilai" th:text="${jumlahTransaksi}">0</div></div>
+        <div class="card"><div class="label">Jumlah produk</div>
+            <div class="nilai" th:text="${jumlahProduk}">0</div></div>
+    </div>
+
+    <p><a class="btn" th:href="@{/kasir}">Mulai transaksi</a>
+       <a class="btn sekunder" th:href="@{/produk/baru}">Tambah produk</a></p>
+
+    <h2 th:text="${'Stok menipis (≤ ' + batas + ')'}">Stok menipis</h2>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Kode</th><th>Nama</th><th class="angka">Stok</th></tr></thead>
+            <tbody>
+            <tr th:each="p : ${stokMenipis}">
+                <td th:text="${p.kode}"></td>
+                <td th:text="${p.nama}"></td>
+                <td class="angka"><span class="badge" th:classappend="${p.stok == 0} ? 'habis' : 'menipis'" th:text="${p.stok}"></span></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(stokMenipis)}"><td colspan="3" class="kosong">Semua stok aman.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

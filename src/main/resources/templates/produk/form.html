@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${judul})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('produk')}"></header>
+<main>
+    <h1 th:text="${judul}">Tambah Produk</h1>
+
+    <form class="card form-card" th:action="@{/produk/simpan}" th:object="${produk}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="field">
+            <label for="kode">Kode</label>
+            <input type="text" id="kode" th:field="*{kode}" maxlength="20">
+            <div class="error" th:if="${#fields.hasErrors('kode')}" th:errors="*{kode}"></div>
+        </div>
+
+        <div class="field">
+            <label for="nama">Nama</label>
+            <input type="text" id="nama" th:field="*{nama}" maxlength="100">
+            <div class="error" th:if="${#fields.hasErrors('nama')}" th:errors="*{nama}"></div>
+        </div>
+
+        <div class="field">
+            <label for="kategoriId">Kategori</label>
+            <select id="kategoriId" name="kategoriId">
+                <option value="">-- pilih kategori --</option>
+                <option th:each="k : ${daftarKategori}" th:value="${k.id}" th:text="${k.nama}"
+                        th:selected="${produk.kategori != null and produk.kategori.id == k.id}"></option>
+            </select>
+            <div class="error" th:if="${#fields.hasErrors('kategori')}" th:errors="*{kategori}"></div>
+        </div>
+
+        <div class="field">
+            <label for="harga">Harga (Rp)</label>
+            <input type="number" id="harga" th:field="*{harga}" min="0" step="1">
+            <div class="error" th:if="${#fields.hasErrors('harga')}" th:errors="*{harga}"></div>
+        </div>
+
+        <div class="field">
+            <label for="stok">Stok</label>
+            <input type="number" id="stok" th:field="*{stok}" min="0" step="1">
+            <div class="error" th:if="${#fields.hasErrors('stok')}" th:errors="*{stok}"></div>
+        </div>
+
+        <div class="aksi-form">
+            <button class="btn" type="submit">Simpan</button>
+            <a class="btn sekunder" th:href="@{/produk}">Batal</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

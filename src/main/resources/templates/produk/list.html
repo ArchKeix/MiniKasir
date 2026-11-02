@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Produk')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('produk')}"></header>
+<main>
+    <h1>Produk</h1>
+    <div th:replace="~{fragments/layout :: pesan}"></div>
+
+    <div class="toolbar">
+        <form th:action="@{/produk}" method="get">
+            <input type="text" name="q" th:value="${q}" placeholder="Cari nama atau kode...">
+            <button class="btn sekunder" type="submit">Cari</button>
+        </form>
+        <a class="btn" th:href="@{/produk/baru}">+ Tambah produk</a>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr><th>Kode</th><th>Nama</th><th>Kategori</th><th class="angka">Harga</th><th class="angka">Stok</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${daftar}">
+                <td th:text="${p.kode}"></td>
+                <td th:text="${p.nama}"></td>
+                <td th:text="${p.kategori != null} ? ${p.kategori.nama} : '-'"></td>
+                <td class="angka" th:text="${'Rp ' + #numbers.formatDecimal(p.harga, 1, 'POINT', 0, 'COMMA')}"></td>
+                <td class="angka">
+                    <span class="badge" th:classappend="${p.stok == 0} ? 'habis' : (${p.stok <= 5} ? 'menipis')" th:text="${p.stok}"></span>
+                </td>
+                <td class="aksi">
+                    <a class="btn sekunder kecil" th:href="@{/produk/{id}/ubah(id=${p.id})}">Ubah</a>
+                    <form class="inline" th:action="@{/produk/{id}/hapus(id=${p.id})}" method="post"
+                          onsubmit="return confirm('Hapus produk ini?');">
+                        <button class="btn bahaya kecil" type="submit">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(daftar)}"><td colspan="6" class="kosong">Belum ada produk.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
