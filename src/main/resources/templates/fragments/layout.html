@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(judul)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${judul} + ' · Kasir Mini'">Kasir Mini</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:fragment="nav(aktif)" class="topbar">
+    <div class="topbar-inner">
+        <a class="brand" th:href="@{/}">Kasir Mini</a>
+        <nav>
+            <a th:href="@{/}" th:classappend="${aktif == 'dashboard'} ? 'aktif'">Dashboard</a>
+            <a th:href="@{/kasir}" th:classappend="${aktif == 'kasir'} ? 'aktif'">Kasir</a>
+            <a th:href="@{/produk}" th:classappend="${aktif == 'produk'} ? 'aktif'">Produk</a>
+            <a th:href="@{/kategori}" th:classappend="${aktif == 'kategori'} ? 'aktif'">Kategori</a>
+            <a th:href="@{/transaksi}" th:classappend="${aktif == 'transaksi'} ? 'aktif'">Transaksi</a>
+        </nav>
+    </div>
+</header>
+
+<div th:fragment="pesan">
+    <div class="alert sukses" th:if="${sukses}" th:text="${sukses}"></div>
+    <div class="alert galat" th:if="${galat}" th:text="${galat}"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Struk')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('transaksi')}"></header>
+<main>
+    <div class="alert sukses" th:if="${sukses}" th:text="${sukses}"></div>
+
+    <div class="card struk">
+        <h1>KASIR MINI</h1>
+        <div class="rinci" th:text="${'Struk #' + t.id + ' · ' + #temporals.format(t.tanggal, 'dd MMM yyyy HH:mm')}"></div>
+        <div class="garis"></div>
+
+        <div th:each="d : ${t.detail}">
+            <div class="baris"><span th:text="${d.produk.nama}"></span>
+                <span th:text="${#numbers.formatDecimal(d.subtotal, 1, 'POINT', 0, 'COMMA')}"></span></div>
+            <div class="rinci" th:text="${d.jumlah + ' x ' + #numbers.formatDecimal(d.hargaSatuan, 1, 'POINT', 0, 'COMMA')}"></div>
+        </div>
+
+        <div class="garis"></div>
+        <div class="baris total"><span>TOTAL</span>
+            <span th:text="${'Rp ' + #numbers.formatDecimal(t.total, 1, 'POINT', 0, 'COMMA')}"></span></div>
+        <div class="garis"></div>
+        <div class="rinci" style="text-align:center">Terima kasih</div>
+    </div>
+
+    <div class="cetak-sembunyi">
+        <button class="btn" type="button" onclick="window.print()">Cetak</button>
+        <a class="btn sekunder" th:href="@{/kasir}">Transaksi baru</a>
+        <a class="btn sekunder" th:href="@{/transaksi}">Riwayat</a>
+    </div>
+</main>
+</body>
+</html>

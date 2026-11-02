@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Transaksi')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('transaksi')}"></header>
+<main>
+    <h1>Riwayat Transaksi</h1>
+    <div th:replace="~{fragments/layout :: pesan}"></div>
+
+    <div class="card">
+        Total omzet:
+        <strong th:text="${'Rp ' + #numbers.formatDecimal(omzet, 1, 'POINT', 0, 'COMMA')}">Rp 0</strong>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr><th>No.</th><th>Tanggal</th><th class="angka">Item</th><th class="angka">Total</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="t : ${daftar}">
+                <td th:text="${'#' + t.id}"></td>
+                <td th:text="${#temporals.format(t.tanggal, 'dd MMM yyyy HH:mm')}"></td>
+                <td class="angka" th:text="${#lists.size(t.detail)}"></td>
+                <td class="angka" th:text="${'Rp ' + #numbers.formatDecimal(t.total, 1, 'POINT', 0, 'COMMA')}"></td>
+                <td class="aksi"><a class="btn sekunder kecil" th:href="@{/transaksi/{id}(id=${t.id})}">Lihat struk</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(daftar)}"><td colspan="5" class="kosong">Belum ada transaksi.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
