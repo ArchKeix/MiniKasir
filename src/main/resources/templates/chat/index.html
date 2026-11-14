@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Asisten AI')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('chat')}"></header>
+<main>
+    <h1>Asisten AI Kasir</h1>
+    <p class="redup">Coba: “Cek stok MN01”, “Tambah stok MN01 sebanyak 5”, atau “Hapus MN01”. Penghapusan meminta konfirmasi.</p>
+
+    <section id="chat-box" class="chat-box" aria-live="polite" aria-label="Percakapan dengan asisten">
+        <div id="chat-empty" th:if="${#lists.isEmpty(riwayat)}" class="kosong">Belum ada percakapan. Mulai dengan pertanyaan tentang produk atau stok.</div>
+        <div th:each="item : ${riwayat}" class="chat-message" th:classappend="${item.role == 'user'} ? ' chat-user' : ' chat-assistant'">
+            <strong th:text="${item.role == 'user' ? 'Anda' : 'Asisten'}">Asisten</strong>
+            <p th:text="${item.isi}"></p>
+        </div>
+        <div id="typing" class="chat-message chat-assistant" hidden>
+            <strong>Asisten</strong><p>Sedang mengetik...</p>
+        </div>
+    </section>
+
+    <form id="chat-form" method="post" th:action="@{/chat}" class="chat-form">
+        <label for="pesan">Pesan</label>
+        <div class="chat-input-row">
+            <input id="pesan" name="pesan" type="text" maxlength="500" required autocomplete="off" placeholder="Tulis pertanyaan atau perintah...">
+            <button id="send-button" class="btn" type="submit">Kirim</button>
+        </div>
+    </form>
+    <form method="post" th:action="@{/chat/bersihkan}">
+        <button class="btn sekunder kecil" type="submit">Bersihkan percakapan</button>
+    </form>
+</main>
+<script>
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('pesan');
+    const box = document.getElementById('chat-box');
+    const typing = document.getElementById('typing');
+    const button = document.getElementById('send-button');
+    const empty = document.getElementById('chat-empty');
+
+    function appendMessage(role, message) {
+        const article = document.createElement('div');
+        article.className = `chat-message ${role === 'user' ? 'chat-user' : 'chat-assistant'}`;
+        const name = document.createElement('strong');
+        name.textContent = role === 'user' ? 'Anda' : 'Asisten';
+        const text = document.createElement('p');
+        text.textContent = message;
+        article.append(name, text);
+        box.insertBefore(article, typing);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const message = input.value.trim();
+        if (!message || button.disabled) return;
+
+        if (empty) empty.remove();
+        appendMessage('user', message);
+        input.value = '';
+        input.disabled = true;
+        button.disabled = true;
+        typing.hidden = false;
+        box.scrollTop = box.scrollHeight;
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                body: new URLSearchParams({ pesan: message })
+            });
+            if (!response.ok) throw new Error('Permintaan gagal. Coba lagi.');
+            const result = await response.json();
+            appendMessage('assistant', result.jawaban);
+        } catch (error) {
+            appendMessage('assistant', error.message || 'Tidak dapat terhubung ke server.');
+        } finally {
+            typing.hidden = true;
+            input.disabled = false;
+            button.disabled = false;
+            input.focus();
+            box.scrollTop = box.scrollHeight;
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,9 +1,9 @@
 # Kasir Mini (Spring Boot + Hibernate + PostgreSQL)
 
 Aplikasi web kasir sederhana: kelola kategori dan produk (CRUD), lakukan transaksi
-(stok berkurang otomatis, gagal = rollback), lihat riwayat dan cetak struk.
+(stok berkurang otomatis, gagal = rollback), lihat riwayat dan cetak struk. Tersedia pula chatbot Spring AI untuk pencarian produk, pemeriksaan stok, tambah produk/stok, dan penghapusan produk dengan konfirmasi.
 
-Teknologi: Java 17, Spring Boot 3.2 (Spring MVC, Spring Data JPA/Hibernate 6, Validation), Thymeleaf, PostgreSQL.
+Teknologi: Java 17, Spring Boot 3.4, Spring AI 1.0 (Naraya OpenAI-compatible API), Spring MVC, Spring Data JPA/Hibernate, Thymeleaf, PostgreSQL.
 
 ## 1. Siapkan PostgreSQL
 
@@ -101,11 +101,17 @@ $env:DB_PASSWORD="admin"
 mvn spring-boot:run
 ```
 
-## 3. Tes
+## 4. Chatbot AI (Spring AI + Naraya)
 
-```bash
-mvn test
+Chatbot memakai Spring AI melalui API OpenAI-compatible Naraya dengan model `gpt-6-luna`, sama seperti konfigurasi model pi agent. `NARAYA_API_KEY` disimpan hanya sebagai environment variable; jangan menyalin key dari konfigurasi pi agent atau memasukkannya ke Git.
+
+```powershell
+# Isi .env terlebih dahulu, kemudian jalankan aplikasi
+mvn spring-boot:run
 ```
+
+Buka http://localhost:8080/chat. Chatbot menyediakan tool pencarian produk, tambah produk, tambah stok, melihat ringkasan omzet/jumlah transaksi, melihat riwayat transaksi terbaru, mencatat transaksi dengan konfirmasi, dan meminta konfirmasi sebelum hapus produk. Waktu transaksi menggunakan `LocalDateTime.now()`. Untuk mengonfirmasi penghapusan atau pencatatan transaksi, ketik persis kode konfirmasi yang ditampilkan. Jangan commit `.env`; file tersebut sudah masuk `.gitignore`.
+
 
 Tes memakai H2 in-memory (`src/test/resources/application.properties`), jadi tidak butuh PostgreSQL.
 
@@ -127,7 +133,7 @@ src/main/java/com/kasir/
 ├── KasirSpringApplication.java
 ├── entity/       Kategori, Produk, Transaksi, DetailTransaksi
 ├── repository/   KategoriRepository, ProdukRepository, TransaksiRepository
-├── service/      KasirService   (checkout @Transactional)
+├── service/      KasirService, ProductTools, TransactionTools, ChatAssistantService
 ├── controller/   Home, Produk, Kategori, Kasir
 └── config/       DataSeeder
 src/main/resources/
@@ -139,5 +145,6 @@ src/main/resources/
 ## Catatan
 
 - Produk yang sudah pernah terjual tidak bisa dihapus (terikat foreign key); aplikasi menampilkan pesan.
-- `checkout` mengunci baris produk (`PESSIMISTIC_WRITE`) agar stok tidak balapan jika dua kasir bekerja bersamaan.
+- `KasirService.checkout` mengunci baris produk (`PESSIMISTIC_WRITE`) agar stok tidak balapan jika dua kasir bekerja bersamaan.
+- Transaksi dari chatbot selalu menampilkan ringkasan dan membutuhkan konfirmasi sebelum stok dikurangi.
 - Untuk produksi: ganti `ddl-auto=update` dengan migrasi Flyway/Liquibase dan tambahkan login (Spring Security).

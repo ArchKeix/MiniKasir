@@ -89,7 +89,18 @@ input:focus, select:focus { outline: 2px solid #b9d2f5; border-color: var(--utam
 .badge.menipis { background: #fff3d6; color: #8a5a00; }
 .badge.habis { background: var(--galat-bg); color: var(--galat-teks); }
 
-.qty { width: 90px; text-align: right; }
+.redup { color: var(--redup); }
+
+.chat-box { background: var(--card); border: 1px solid var(--garis); border-radius: 10px; padding: 16px; min-height: 260px; max-height: 520px; overflow-y: auto; margin: 16px 0; }
+.chat-message { max-width: 82%; padding: 10px 14px; border-radius: 10px; margin: 8px 0; }
+.chat-message strong { font-size: .8rem; color: var(--redup); }
+.chat-message p { margin: 4px 0 0; white-space: pre-wrap; }
+.chat-user { margin-left: auto; background: #e8f0fc; }
+.chat-assistant { background: #f0f2f4; }
+.chat-form { margin-bottom: 10px; }
+.chat-input-row { display: flex; gap: 8px; }
+.chat-input-row input { flex: 1; }
+
 
 .struk { max-width: 420px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .struk h1 { text-align: center; font-size: 1.1rem; }
